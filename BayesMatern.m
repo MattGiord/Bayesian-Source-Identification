@@ -13,7 +13,7 @@
 
 %%
 % Mesh for discretisation of parameter space via piecewise linear functions
-
+ al
 model_prior = createpde(); 
 geometryFromMesh(model_prior,tnodes,telements);
 generateMesh(model_prior,'Hmax',0.1);
@@ -41,11 +41,14 @@ f0_norm=sqrt(sum((f0_bary_prior).^2.*mesh_elements_area_prior));
 % Piecewise linear basis functions
 
 f_lin=zeros(mesh_nodes_num_prior,1);
-f_lin(115)=1;
+f_lin(100)=1;
 
 figure()
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f_lin,'ZData',f_lin,'ColorMap','parula');
-legend('e_{115}','Fontsize',25)
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+%legend('e_{115}','Fontsize',25)
 
 %%
 % Discretisation of solution operator
@@ -95,9 +98,15 @@ rng(1)
 f_rand = mvnrnd(zeros(mesh_nodes_num_prior,1),prior_cov,1)';
 
 figure()
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f_rand,'ZData',f_rand,'ColorMap',parula);
-title('f\sim\Pi(\cdot)','FontSize',15)
-legend('Matérn, \nu=10, \ell=.25','FontSize',25)
+%title('f\sim\Pi(\cdot)','FontSize',15)
+%legend('Matérn, \nu=10, \ell=.25','FontSize',25)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri vik
 
 %%
 % Conjugate formulae for posterior variance and mean
@@ -112,18 +121,42 @@ f_mean_mesh_prior = post_cov*fwd_operator'*observations/(sigma^2);
 
 % Plot posterior mean and estimation erorr
 figure()
-subplot(1,2,1)
+%subplot(1,2,1)
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f0_mesh_prior,'ColorMap',jet)
-title('True f_0','FontSize',20)
+%title('True f_0','FontSize',20)
 clim([min(f0_mesh_prior),max(f0_mesh_prior)])
-subplot(1,2,2)
-pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
-title('Posterior mean estimate','FontSize',20)
-clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+colorbar('Fontsize',20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
 
 figure()
+%subplot(1,2,2)
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
+colorbar('Fontsize',20)
+%title('Posterior mean estimate','FontSize',20)
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
+
+figure()
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f0_mesh_prior-f_mean_mesh_prior','ColorMap',hot)
-title('Estimation error','FontSize',20)
+%title('Estimation error','FontSize',20)
+colorbar('Fontsize',20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri -lajolla
 
 % Compute piecewise constant approximations of posterior mean at
 % the triangle baricenters
@@ -134,3 +167,66 @@ f_mean_bary_prior = griddata(mesh_nodes_prior(1,:),mesh_nodes_prior(2,:),...
 estim_error = sqrt(sum((f0_bary_prior-f_mean_bary_prior).^2.*mesh_elements_area_prior));
 disp(['L^2 estim error = ', num2str(estim_error)])
 disp(['L^2 norm of F_0 = ', num2str(f0_norm)])
+
+%%
+% Estimation for increasing sample sizes
+
+rng(1)
+
+sigma=0.0005;
+    % noise standard deviation
+sample_sizes=[50;100;250;500;750;1000;1500;2000;3000;4500];
+%sample_sizes=[100;250;500;2000];
+n_exp=length(sample_sizes);
+
+post_mean=zeros(mesh_nodes_num_prior,n_exp);
+estim_error=zeros(1,n_exp);
+
+for s=1:n_exp
+    rand_index=sort(randsample(mesh_nodes_num,sample_sizes(s))); 
+        % random indices in the mesh
+    rand_mesh=mesh_nodes(:,rand_index); 
+        % random sample of mesh points drawn uniformly at random
+
+    % Sample observations
+    observations=u0(rand_index)+(mvnrnd(zeros(sample_sizes(s),1),...
+        sigma^2*eye(sample_sizes(s))))'; 
+    
+    % Forward operator
+    fwd_op_exp=fwd_operator(rand_index,:);
+
+    % Posterior covariance matrix
+    post_cov=inv(fwd_op_exp'*fwd_op_exp/(sigma^2)+prior_cov_inv);
+    % Posterior mean
+    f_mean_mesh_prior(:,s) = post_cov*fwd_op_exp'*observations/(sigma^2);
+
+    figure()
+    axes('FontSize', 20, 'NextPlot','add')
+    pdeplot(model_prior,'XYData',f_mean_mesh_prior(:,s),'ColorMap',jet)
+    colorbar('Fontsize',20)
+    %title('Posterior mean estimate','FontSize',20)
+    clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    xticks([-1,-.5,0,.5,1])
+    yticks([-1,-.5,0,.5,1])
+    xlabel('x', 'FontSize', 20);
+    ylabel('y', 'FontSize', 20);
+    crameri vik
+
+    % Compute piecewise constant approximations of posterior mean at
+    % the triangle baricenters
+    f_mean_bary_prior = griddata(mesh_nodes_prior(1,:),mesh_nodes_prior(2,:),...
+    f_mean_mesh_prior(:,s),barycenters_prior(1,:),barycenters_prior(2,:));
+
+    % Approximate L^2 distance between f_0 and posterior mean
+    estim_error(s) = sqrt(sum((f0_bary_prior-f_mean_bary_prior).^2.*mesh_elements_area_prior));
+    disp(['L^2 estim error = ', num2str(estim_error(s))])
+end
+
+figure()
+axes('FontSize', 20, 'NextPlot','add')
+scatter(sample_sizes,estim_error,'*','linewidth',5)
+hold on
+plot(sample_sizes,estim_error)
+ylabel('L^2-estimation error','FontSize',20)
+xlabel('n','FontSize',20)
