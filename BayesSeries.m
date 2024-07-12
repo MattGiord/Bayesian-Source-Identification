@@ -59,23 +59,23 @@ figure()
 subplot(1,3,1)
 pdeplot(model_prior,'XYData',e_basis(:,1)); 
     % plot first eigenfunction
-title('e_0','FontSize',15)
+title('e_0','FontSize',20)
 subplot(1,3,2)
 pdeplot(model_prior,'XYData',e_basis(:,2)); 
     % plot second eigenfunction
-title('e_2','FontSize',15)
+title('e_2','FontSize',20)
 subplot(1,3,3)
 pdeplot(model_prior,'XYData',e_basis(:,J_basis)); 
 % plot eigenfunction corresponding to the largest found eigenvalue
-title('e_J','FontSize',15)
+title('e_J','FontSize',20)
 
 % Plot the eigenvalues
 figure()
-axes('FontSize', 15, 'NextPlot','add')
-plot(lambdas_basis,'*','Linewidth',3)
-xlabel('j', 'FontSize', 15);
-ylabel('\lambda_j', 'FontSize', 15);
-legend('\lambda_j=O(j)','FontSize',25)
+axes('FontSize', 20, 'NextPlot','add')
+plot(lambdas_basis,'*','Linewidth',1)
+xlabel('j', 'FontSize', 20);
+ylabel('\lambda_j', 'FontSize', 20);
+%legend('\lambda_j=O(j)','FontSize',25)
 
 %%
 %L2 normalisation of eigenfunction
@@ -114,16 +114,41 @@ e_basis(:,1:J_basis) = e_basis(:,1:J_basis)*sqrt(mesh_nodes_num_prior/vol);
 %end
 
 figure() 
-subplot(1,3,1)
+%subplot(1,3,1)
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',e_basis(:,1));
-title('Normalised e_1','FontSize',15)
+clim([-1.75,1.75])
+%title('Normalised e_1','FontSize',20)
 %legend('e_1','FontSize',25)
-subplot(1,3,2)
-pdeplot(model_prior,'XYData',e_basis(:,2)); 
-title('Normalised e_2','FontSize',15)
-subplot(1,3,3)
-pdeplot(model_prior,'XYData',e_basis(:,J_basis)); 
-title('Normalised e_D','FontSize',15)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri batlowW
+
+%subplot(1,3,2)
+figure()
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model_prior,'XYData',e_basis(:,2));
+clim([-1.75,1.75])
+%title('Normalised e_2','FontSize',20)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri batlowW
+
+figure()
+%subplot(1,3,3)
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model_prior,'XYData',e_basis(:,J_basis));
+clim([-1.75,1.75])
+%title('Normalised e_J','FontSize',20)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri batlowW
 
 %%
 % Projection of f_0 onto the Dirichlet-Laplacian eigenbasis
@@ -150,20 +175,33 @@ for j=1:J_basis
 end
 
 figure()
+axes('FontSize', 20, 'NextPlot','add')
 subplot(1,3,1)
 pdeplot(model_prior,'XYData',f0_mesh_prior,'ColorMap',jet)
 title('True f_0','FontSize',20)
-colorbar('Fontsize',15)
+%colorbar('FontSize',20)
+%xlabel('x','FontSize', 20)
+%ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
 
 subplot(1,3,2)
 pdeplot(model_prior,'XYData',f0_proj,'ColorMap',jet)
 title('Projection of f_0','FontSize',20)
-colorbar('Fontsize',15)
+%colorbar('FontSize',20)
+%xlabel('x','FontSize', 20)
+%ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
 
 subplot(1,3,3)
 pdeplot(model_prior,'XYData',f0_mesh_prior-f0_proj,'ColorMap',jet)
 title('Approximation error','FontSize',20)
-colorbar('Fontsize',15)
+%colorbar('FontSize',20)
+%xlabel('x','FontSize', 20)
+%ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
 
 % Compute piecewise constant approximations of the projection of f_0 at
 % the triangle baricenters
@@ -222,10 +260,15 @@ for j=1:J_basis
 end
 
 figure()
-axis equal
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f_rand,'ColorMap',jet);
-%title('f\sim\Pi(\cdot)','FontSize',15)
-legend('s=1.5','FontSize',25)
+%title('f\sim\Pi(\cdot)','FontSize',20)
+colorbar('FontSize',20)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri vik
 
 %%
 % Conjugate formulae for posterior variance and mean
@@ -245,18 +288,42 @@ end
 
 % Plot posterior mean and estimation erorr
 figure()
-subplot(1,2,1)
+%subplot(1,2,1)
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f0_mesh_prior,'ColorMap',jet)
-title('True f_0','FontSize',20)
+%title('True f_0','FontSize',20)
 clim([min(f0_mesh_prior),max(f0_mesh_prior)])
-subplot(1,2,2)
-pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
-title('Posterior mean estimate','FontSize',20)
-clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+colorbar('Fontsize',20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
 
 figure()
+%subplot(1,2,2)
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
+colorbar('Fontsize',20)
+%title('Posterior mean estimate','FontSize',20)
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
+
+figure()
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model_prior,'XYData',f0_mesh_prior-f_mean_mesh_prior','ColorMap',hot)
 title('Estimation error','FontSize',20)
+colorbar('Fontsize',20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri -lajolla
 
 % Approximate L^2 distance between f_0 and posterior mean
 estim_error = norm(post_mean-f0_coeff);
@@ -285,6 +352,9 @@ figure()
 hold on
 plot(xvals,f0_xaxis,'Linewidth',2,'Color','k')
 plot(xvals,f_mean_xaxis,'Linewidth',2,'Color','r')
+xticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('f(x)', 'FontSize', 20);
 legend('f_0(\cdot,0)','posterior mean')
 
 rng(1)
@@ -310,7 +380,7 @@ end
 plot(xvals,f0_xaxis,'Linewidth',2,'Color','k')
 plot(xvals,f_mean_xaxis,'Linewidth',2,'Color','r')
 hold on
-legend('f_0(\cdot,0)','posterior mean','Fontsize',15)
+legend('f_0(\cdot,0)','posterior mean','FontSize',20)
 hold off
 
 %%
@@ -320,8 +390,10 @@ rng(1)
 
 sigma=0.0005;
     % noise standard deviation
+disp(['Signal to noise ratio = ', num2str(u0_norm/sigma)])
 
 sample_sizes=[50;100;250;500;750;1000;1500;2000;3000;4500];
+%sample_sizes=[100;250;500;2000];
 n_exp=length(sample_sizes);
 
 post_mean=zeros(J_basis,n_exp);
@@ -350,16 +422,18 @@ for s=1:n_exp
         f_mean_mesh_prior = f_mean_mesh_prior+post_mean(j,s)*e_basis(:,j);
     end
 
-    % Plot posterior mean and estimation erorr
     figure()
-    %subplot(1,2,1)
-    %pdeplot(model_prior,'XYData',f0_mesh_prior,'ColorMap',jet)
-    %title('True f_0','FontSize',20)
-    %clim([min(f0_mesh_prior),max(f0_mesh_prior)])
-    %subplot(1,2,2)
+    axes('FontSize', 20, 'NextPlot','add')
     pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
-    title(['Posterior mean, n=' num2str(sample_sizes(s))],'FontSize',20)
+    colorbar('Fontsize',20)
+    %title('Posterior mean estimate','FontSize',20)
     clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    xticks([-1,-.5,0,.5,1])
+    yticks([-1,-.5,0,.5,1])
+    xlabel('x', 'FontSize', 20);
+    ylabel('y', 'FontSize', 20);
+    crameri vik
 
     % Approximate L^2 distance between f_0 and posterior mean
     estim_error(s) = norm(post_mean(:,s)-f0_coeff);
@@ -368,10 +442,129 @@ for s=1:n_exp
 end
 
 figure()
+axes('FontSize', 20, 'NextPlot','add')
 scatter(sample_sizes,estim_error,'*','linewidth',5)
 hold on
 plot(sample_sizes,estim_error)
 yline(approx_error,'r')
-ylabel('L^2-estimation error','FontSize',15)
-xlabel('n','FontSize',15)
+ylabel('L^2-estimation error','FontSize',20)
+xlabel('n','FontSize',20)
 
+%%
+% Estimation for decreasing noise variance
+
+rng(1)
+
+sigmas=[.0001;.0005;0.001;.0025;.005;.01];
+    % noise standard deviation
+
+sample_size=4500;
+rand_index=sort(randsample(mesh_nodes_num,sample_size)); 
+        % random indices in the mesh
+rand_mesh=mesh_nodes(:,rand_index); 
+        % random sample of mesh points drawn uniformly at random
+% Forward operator
+    fwd_op_exp=fwd_operator(rand_index,:);
+
+n_exp=length(sigmas);
+
+post_mean=zeros(J_basis,n_exp);
+estim_error=zeros(1,n_exp);
+
+for s=1:n_exp
+    disp(['Signal to noise ratio = ', num2str(u0_norm/sigmas(s))])
+
+    % Sample observations
+    observations=u0(rand_index)+(mvnrnd(zeros(sample_size,1),...
+        sigmas(s)^2*eye(sample_size)))'; 
+    
+    % Posterior covariance matrix
+    post_cov=inv(fwd_op_exp'*fwd_op_exp/(sigmas(s)^2)+prior_cov_inv);
+    % Posterior mean
+    post_mean(:,s) = post_cov*fwd_op_exp'*observations/(sigmas(s)^2);
+
+    f_mean_mesh_prior=zeros(mesh_nodes_num_prior,1);
+    for j=1:J_basis
+        f_mean_mesh_prior = f_mean_mesh_prior+post_mean(j,s)*e_basis(:,j);
+    end
+
+    figure()
+    axes('FontSize', 20, 'NextPlot','add')
+    pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
+    colorbar('Fontsize',20)
+    %title('Posterior mean estimate','FontSize',20)
+    clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+    xticks([-1,-.5,0,.5,1])
+    yticks([-1,-.5,0,.5,1])
+    xlabel('x', 'FontSize', 20);
+    ylabel('y', 'FontSize', 20);
+    crameri vik
+
+    % Approximate L^2 distance between f_0 and posterior mean
+    estim_error(s) = norm(post_mean(:,s)-f0_coeff);
+    disp(['L^2 estimation error = ', num2str(estim_error(s))])
+    %disp(['L^2 norm of f_0 = ', num2str(f0_norm)])
+end
+
+figure()
+axes('FontSize', 20, 'NextPlot','add')
+scatter(sigmas,estim_error,'*','linewidth',5)
+hold on
+plot(sigmas,estim_error)
+yline(approx_error,'r')
+ylabel('L^2-estimation error','FontSize',20)
+xlabel('\sigma','FontSize',20)
+
+%%
+% Empirical estimation of the noise variance
+
+rng(1)
+
+% Generate observations
+sigma=.0005;
+sample_size=4505;
+rand_index=sort(randsample(mesh_nodes_num,sample_size)); 
+rand_mesh=mesh_nodes(:,rand_index); 
+fwd_op_exp=fwd_operator(rand_index,:);
+observations=u0(rand_index)+(mvnrnd(zeros(sample_size,1),...
+        sigma^2*eye(sample_size)))';
+
+% Difference-based variance estimation
+histogram(vecnorm(mesh_nodes(:,1:(sample_size-1))-mesh_nodes(:,2:sample_size)))
+index_near_nodes = vecnorm(mesh_nodes(:,1:(sample_size-1))-mesh_nodes(:,2:sample_size))<.1;
+near_nodes_num= sum(index_near_nodes);
+obs_diff = observations(1:sample_size-1) - observations(2:sample_size);
+obs_diff_near = obs_diff(index_near_nodes);
+var_hat =  sum( obs_diff_near.^2 ) / (2*(near_nodes_num));
+sigma_hat = sqrt(var_hat);
+% disp(['n. considered observations = ', num2str(near_nodes_num)])
+disp(['sigma = ', num2str(sigma)])
+disp(['estimate of sigma = ', num2str(sigma_hat)])
+ 
+% Posterior inference
+post_cov=inv(fwd_op_exp'*fwd_op_exp/(sigma_hat^2)+prior_cov_inv);
+post_mean = post_cov*fwd_op_exp'*observations/(sigma_hat^2);
+
+f_mean_mesh_prior=zeros(mesh_nodes_num_prior,1);
+for j=1:J_basis
+    f_mean_mesh_prior = f_mean_mesh_prior+post_mean(j)*e_basis(:,j);
+end
+
+figure()
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model_prior,'XYData',f_mean_mesh_prior,'ColorMap',jet)
+colorbar('Fontsize',20)
+%title('Posterior mean estimate','FontSize',20)
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+clim([min(f0_mesh_prior),max(f0_mesh_prior)])
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
+
+% Approximate L^2 distance between f_0 and posterior mean
+estim_error = norm(post_mean-f0_coeff);
+disp(['L^2 estimation error = ', num2str(estim_error)])
+%disp(['L^2 norm of f_0 = ', num2str(f0_norm)])
