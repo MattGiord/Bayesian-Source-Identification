@@ -1,4 +1,4 @@
-% Copyright (c) 2024 Matteo Giordano
+Copyright (c) 2024 Matteo Giordano
 %
 % Codes accompanying the article "A Bayesian approach with Gaussian priors to 
 % the inverse problem of source identification in elliptic PDEs" 
@@ -59,7 +59,12 @@ geometryFromMesh(model,tnodes,telements);
 % Generate and plot triangular mesh
 generateMesh(model,'Hmax',.05);
 figure()
+axes('FontSize', 20, 'NextPlot','add')
 pdemesh(model)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
 mesh_nodes = model.Mesh.Nodes; 
     % 2 x mesh_size matrix whose columns contain the (x,y) coordinates 
     % of the nodes in the mesh
@@ -73,6 +78,14 @@ mesh_elements = model.Mesh.Elements;
 mesh_elements_num = size(mesh_elements); 
 mesh_elements_num = mesh_elements_num(2); 
     % number of triangles in the mesh
+[~,mesh_elements_area] = area(model.Mesh); 
+
+% Compute barycenters of triangular mesh elements
+barycenters = zeros(2,mesh_elements_num);
+for i=1:mesh_elements_num
+    barycenters(:,i) = mean(mesh_nodes(:,mesh_elements(1:3,i)),2);
+end
+
 
 %%
 % Specify diffusivity c and true source f_0
@@ -87,15 +100,17 @@ c_mesh = c_min + 1 + 5*exp(-(5*mesh_nodes(1,:)-2).^2 ...
 
 % Plot c
 figure()
-axes('FontSize', 15, 'NextPlot','add')
-pdeplot(model,'XYData',c_mesh,'ColorMap',jet)
-axis equal
-colorbar('Fontsize',15)
+axes('FontSize', 20, 'NextPlot','add')
+pdeplot(model,'XYData',c_mesh)
+colorbar('Fontsize',20)
 % pdeplot(model,'XYData',f0_num,'ZData',f0_num,'ColorMap',jet) 
     % 3D plot
-title('Known diffusivity c','FontSize',20);
-xlabel('x', 'FontSize', 15);
-ylabel('y', 'FontSize', 15);
+%title('Known diffusivity c','FontSize',20);
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
 
 % Specify the unknown source f_0 as a function of (x,y)
 f0 = @(x,y) exp(-(5*x-2.5).^2-(5*y).^2)+exp(-(7.5*x).^2-(2.5*y).^2)...
@@ -106,13 +121,15 @@ f0_mesh=exp(-(5*mesh_nodes(1,:)-2.5).^2-(5*mesh_nodes(2,:)).^2)...
 
 % Plot f0
 figure()
-axes('FontSize', 15, 'NextPlot','add')
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model,'XYData',f0_mesh,'ColorMap',jet)
-axis equal
-colorbar('Fontsize',15)
-title('True source f_0','FontSize',20);
-xlabel('x', 'FontSize', 15);
-ylabel('y', 'FontSize', 15);
+colorbar('Fontsize',20)
+%title('True source f_0','FontSize',20);
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x', 'FontSize', 20);
+ylabel('y', 'FontSize', 20);
+crameri vik
 
 %%
 % Elliptic PDE solution corresponding to diffusivity c and true source f_0
@@ -132,11 +149,20 @@ specifyCoefficients(model,'m',0,'d',0,'c',c_fun,'a',0,'f',f0_fun);
 results = solvepde(model);
 u0 = results.NodalSolution; 
 figure()
-axis equal
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model,'XYData',u0)
-title('PDE solution G(f_0)\equiv u_{f_0}','FontSize', 20)
-xlabel('x','FontSize', 15)
-ylabel('y', 'FontSize', 15)
+%title('PDE solution G(f_0)\equiv u_{f_0}','FontSize', 20)
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri batlowW
+
+u0_interp=scatteredInterpolant(mesh_nodes(1,:)',mesh_nodes(2,:)',u0);
+u0_bary=u0_interp(barycenters(1,:),barycenters(2,:));
+% Approximate L^2 distance between f_0 and posterior mean
+u0_norm = sqrt(sum((u0_bary).^2.*mesh_elements_area));
+disp(['Norm of u0 = ', num2str(u0_norm)])
 
 %%
 % Noisy observations of PDE solution
@@ -144,21 +170,24 @@ ylabel('y', 'FontSize', 15)
 rng(1)
 
 % Sample design points and noise variales
-sample_size=mesh_nodes_num; 
+sample_size=4500; 
     % number of observations
 sigma=0.0005;
+disp(['Signal to noise ratio = ', num2str(u0_norm/sigma)])
     % noise standard deviation
 rand_index=sort(randsample(mesh_nodes_num,sample_size)); 
     % random indices in the mesh
 rand_mesh=mesh_nodes(:,rand_index); 
     % random sample of mesh points drawn uniformly at random
 figure()
-axis equal
+axes('FontSize', 20, 'NextPlot','add')
 scatter(rand_mesh(1,:),rand_mesh(2,:),'filled') 
     % plot of sampled locations
-title('Design points X_1,...,X_n','FontSize', 20)
-xlabel('x','FontSize', 15)
-ylabel('y', 'FontSize', 15)
+%title('Design points X_1,...,X_n','FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
 
 % Sample observations
 observations=u0(rand_index)+(mvnrnd(zeros(sample_size,1),...
@@ -169,8 +198,11 @@ u0_noisy(rand_index)=observations;
 
 % Plot corrupted PDE solution
 figure()
-axis equal
+axes('FontSize', 20, 'NextPlot','add')
 pdeplot(model,'XYData',u0_noisy)
-title('Observations Y_i=u_{f_0}(X_i)+\sigma W_i','FontSize', 20);
-xlabel('x','FontSize', 15)
-ylabel('y', 'FontSize', 15)
+%title('Observations Y_i=u_{f_0}(X_i)+\sigma W_i','FontSize', 20);
+xlabel('x','FontSize', 20)
+ylabel('y', 'FontSize', 20)
+xticks([-1,-.5,0,.5,1])
+yticks([-1,-.5,0,.5,1])
+crameri batlowW
