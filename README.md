@@ -1,3 +1,5 @@
+# Bayesian-Source-Identification
+
 MATLAB code for nonparametric Bayesian inference on the source function in an elliptic PDE.
 
 Author: Matteo Giordano, https://matteogiordano.weebly.com.
@@ -23,9 +25,9 @@ It contains the following:
    of the source function. It requires the output of GenerateObservations.m.
 4. BayesMatern.m, code to implement posterior inference with Matérn process priors.
    It requires the output of GenerateObservations.m and the auxiliary function in K_mat.m.
-5. K_mat.m, auxiliary code for the Matérn covariance kernel, required by BayesMatern.m
+5. K_mat.m, auxiliary code for the Matérn covariance kernel, required by BayesMatern.m.
 
-For questions or for reporting bugs, please e-mail Matteo Giordano (matteo.giordano@unito.it)
+For questions or for reporting bugs, please e-mail Matteo Giordano (matteo.giordano@unito.it).
 
 Please cite the following article if you use this repository in your research: Giordano, M (2024). A Bayesian approach with Gaussian priors 
 to the inverse problem of source identification in elliptic PDEs.
